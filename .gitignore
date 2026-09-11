@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+.idea/
+.DS_Store
+.venv/
+.cache/
+
+# SLURM output
+slurm-*.out
+*.out
+
+# Local weight downloads (Hugging Face cache lives elsewhere by default)
+models/
