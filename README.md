@@ -12,9 +12,11 @@ short enough to read in one sitting.
 
 ## Why "tribunal"?
 
-In Morrowind, the Tribunal are three living gods who sit in judgment. Here, the tribunal
-is a few lines of Python that pass one of four verdicts on each answer. If you have never
-played Morrowind, "tribunal" also just means a court, which is close enough.
+In [Morrowind](https://en.uesp.net/wiki/Morrowind:Morrowind), the
+[Tribunal](https://en.uesp.net/wiki/Lore:Tribunal) are three living gods who sit in
+judgment. Here, the tribunal is a few lines of Python that pass one of four verdicts on
+each answer. If you have never played Morrowind, "tribunal" also just means a court, which
+is close enough.
 
 ## The four verdicts
 
