@@ -15,6 +15,7 @@ import os
 import statistics
 import subprocess
 import sys
+import zlib
 from datetime import datetime
 from pathlib import Path
 
@@ -76,7 +77,6 @@ def main():
     print(f"Loading {args.model} on {device} ({dtype}); weights cache: {constants.HF_HUB_CACHE}")
     backend = Backend(args.model, device, dtype, args.device_map)
     print(f"Loaded in {backend.load_seconds:.1f}s\n")
-    transformers.set_seed(args.seed)
 
     rows = []
     for q in questions:
@@ -85,6 +85,9 @@ def main():
             {"role": "user", "content": q["question"]},
         ]
         print(f"[{q['id']}] {q['question']}")
+        # Reseed per question, from its id: sampled answers then don't shift when other questions
+        # are added, reworded, or answered at a different length (e.g. under another prompt style).
+        transformers.set_seed((args.seed + zlib.crc32(q["id"].encode())) % 2**32)
         for sample in range(1, args.samples + 1):
             response, new_tokens, seconds = backend.generate(messages, args.max_new_tokens, args.temperature)
             rows.append({
