@@ -8,7 +8,19 @@ whatever hardware you have (a laptop, a university cluster, an 8 GB gaming GPU),
 a leaderboard. The goal is to *see where a small model's knowledge gets lossy*, with code
 short enough to read in one sitting.
 
-> **Status: skeleton.** The plan is settled; the code is coming next. Watch this space.
+> **Status: early.** A model can be downloaded and asked questions; the verdicts
+> (`judge.py`) and the real question bank are next.
+
+## Quick start
+
+```bash
+conda env create -f environment.yml && conda activate llm-tribunal
+python download.py            # Qwen3.5-2B, ~4 GB, into ./models
+python run.py --limit 3       # ask 3 questions, write a CSV to results/
+```
+
+Weights land in `./models/` unless `HF_HOME` or `HF_HUB_CACHE` is set. `run.py` never
+downloads; for another model, run `python download.py --model <id>` first.
 
 ## Why "tribunal"?
 
@@ -43,20 +55,22 @@ Reviewing that column is part of the exercise.
    (`cuda` / `mps` / `cpu`), and tokens per second, so the same script produces a
    comparable row on any machine.
 
-## Planned layout
+## Layout
 
 ```
 llm-tribunal/
 ├── environment.yml      # conda: python, pytorch, transformers, accelerate
 ├── questions.csv        # the question bank (id, category, question, expected_answer, kind, notes)
+├── download.py          # fetch a model's weights into ./models
 ├── run.py               # load model, ask every question, write a results CSV
 ├── tribunal/
 │   ├── backend.py       # pick a device, load the model, generate
-│   ├── judge.py         # the preliminary verdict heuristics
+│   ├── judge.py         # the preliminary verdict heuristics (planned)
 │   ├── hardware.py      # what machine am I on?
-│   └── report.py        # summary table
+│   └── report.py        # summary table (planned)
+├── models/              # downloaded weights (gitignored)
 ├── results/             # one CSV per run (machine, model, timestamp), plus a cross-hardware table
-└── job.slurm            # example batch script for a SLURM cluster
+└── job.slurm            # example batch script for a SLURM cluster (planned)
 ```
 
 ## Hardware tested
