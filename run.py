@@ -1,5 +1,9 @@
 """Ask a model every question in the bank and write one results CSV.
 
+Start here. Reads questions.csv, asks each question through tribunal/backend.py,
+and writes results/<machine>_<model>_<style>_<timestamp>.csv with the run's
+hardware and software details as leading '#' lines.
+
     python run.py --limit 3
     python run.py --model Qwen/Qwen3.5-9B --prompt-style permission
 """
