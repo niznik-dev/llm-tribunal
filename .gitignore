@@ -9,5 +9,5 @@ __pycache__/
 slurm-*.out
 *.out
 
-# Local weight downloads (Hugging Face cache lives elsewhere by default)
+# Model weights: run.py points HF_HUB_CACHE here unless HF_HOME/HF_HUB_CACHE is already set
 models/

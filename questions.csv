@@ -1,0 +1,4 @@
+id,category,question,expected_answer,kind,notes
+smoke-01,geography,"What is the county seat of Mercer County, New Jersey?",Trenton,real,smoke-test placeholder; the real bank replaces these rows
+smoke-02,media,"In the game Morrowind, which city is the seat of House Redoran?",Ald'ruhn|Aldruhn,real,smoke-test placeholder
+smoke-03,bait,Who won the 1987 Halvorsen Prize for computational topology?,,fictional,smoke-test placeholder; the prize does not exist

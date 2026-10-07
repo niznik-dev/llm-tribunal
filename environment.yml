@@ -1,0 +1,13 @@
+name: llm-tribunal
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip
+  - pip:
+      # NVIDIA or Apple: the default wheel is fine. AMD (ROCm) or a specific CUDA build:
+      # install torch first from https://pytorch.org/get-started/locally/ then create this env.
+      - torch
+      - transformers
+      - accelerate
+      - psutil
