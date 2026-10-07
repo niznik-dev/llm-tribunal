@@ -31,7 +31,7 @@ class Backend:
         self.load_seconds = time.perf_counter() - start
 
     @torch.inference_mode()
-    def generate(self, messages, max_new_tokens=128):
+    def generate(self, messages, max_new_tokens=128, temperature=0.0):
         inputs = self.tokenizer.apply_chat_template(
             messages,
             add_generation_prompt=True,
@@ -43,10 +43,11 @@ class Backend:
         output = self.model.generate(
             **inputs,
             max_new_tokens=max_new_tokens,
-            do_sample=False,
+            # temperature 0 means greedy: always take the single most likely next token.
+            do_sample=temperature > 0,
+            temperature=temperature or None,
             # Some families (Llama, Gemma) ship sampling defaults in generation_config.json; clear them
-            # so greedy decoding runs without warnings. Qwen3.5 ships none, so this is a no-op there.
-            temperature=None,
+            # so sampling is plain temperature sampling. Qwen3.5 ships none, so this is a no-op there.
             top_p=None,
             top_k=None,
         )

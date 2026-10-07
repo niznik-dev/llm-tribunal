@@ -46,6 +46,9 @@ def parse_args():
     p.add_argument("--device-map", choices=["single", "auto"], default="single",
                    help="'auto' splits a model too big for one GPU across all visible GPUs")
     p.add_argument("--max-new-tokens", type=int, default=128)
+    p.add_argument("--samples", type=int, default=1, help="answers per question; >1 needs --temperature > 0")
+    p.add_argument("--temperature", type=float, default=0.0, help="0 = greedy (default)")
+    p.add_argument("--seed", type=int, default=0, help="makes sampled runs repeatable")
     p.add_argument("--out-dir", type=Path, default=REPO / "results")
     return p.parse_args()
 
@@ -57,6 +60,9 @@ def main():
     if not questions:
         sys.exit(f"No questions to ask: {args.questions} is empty or --limit is 0.")
 
+    if args.samples > 1 and args.temperature == 0:
+        sys.exit("--samples > 1 with greedy decoding would repeat the same answer; set --temperature too.")
+
     if not isinstance(try_to_load_from_cache(args.model, "config.json"), str):
         sys.exit(f"{args.model} is not in {constants.HF_HUB_CACHE}.\n"
                  f"Run first: python download.py --model {args.model}")
@@ -66,6 +72,7 @@ def main():
     print(f"Loading {args.model} on {device} ({dtype}); weights cache: {constants.HF_HUB_CACHE}")
     backend = Backend(args.model, device, dtype, args.device_map)
     print(f"Loaded in {backend.load_seconds:.1f}s\n")
+    transformers.set_seed(args.seed)
 
     rows = []
     for q in questions:
@@ -73,17 +80,21 @@ def main():
             {"role": "system", "content": PROMPTS[args.prompt_style]},
             {"role": "user", "content": q["question"]},
         ]
-        response, new_tokens, seconds = backend.generate(messages, args.max_new_tokens)
-        rows.append({
-            **q,
-            "prompt_style": args.prompt_style,
-            "response": response,
-            "new_tokens": new_tokens,
-            "seconds": round(seconds, 2),
-            "tok_s": round(new_tokens / seconds, 1),
-            "human_verdict": "",
-        })
-        print(f"[{q['id']}] {q['question']}\n  → {response}\n  ({new_tokens} tok, {new_tokens / seconds:.1f} tok/s)\n")
+        print(f"[{q['id']}] {q['question']}")
+        for sample in range(1, args.samples + 1):
+            response, new_tokens, seconds = backend.generate(messages, args.max_new_tokens, args.temperature)
+            rows.append({
+                **q,
+                "prompt_style": args.prompt_style,
+                "sample": sample,
+                "response": response,
+                "new_tokens": new_tokens,
+                "seconds": round(seconds, 2),
+                "tok_s": round(new_tokens / seconds, 1),
+                "human_verdict": "",
+            })
+            print(f"  → {response}  ({new_tokens} tok, {new_tokens / seconds:.1f} tok/s)")
+        print()
 
     info = hardware.describe(device, dtype)
     info |= {
@@ -93,6 +104,9 @@ def main():
         "questions_sha": hashlib.sha256(args.questions.read_bytes()).hexdigest()[:12],
         "model": args.model,
         "prompt_style": args.prompt_style,
+        "temperature": args.temperature,
+        "samples": args.samples,
+        "seed": args.seed,
         "load_seconds": round(backend.load_seconds, 1),
         # Median, not mean: the first question pays one-time setup and runs several times slower.
         "median_tok_s": statistics.median(r["tok_s"] for r in rows),
