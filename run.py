@@ -11,14 +11,13 @@ import sys
 from datetime import date
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parent
+# Never download here; weights come from download.py. Downloading and loading in one process
+# can hang or segfault: hf-xet's download threads outlive the download and collide with the load.
+os.environ["HF_HUB_OFFLINE"] = "1"
 
-# Must happen before transformers is imported: it reads the cache location at import time.
-if not (os.environ.get("HF_HOME") or os.environ.get("HF_HUB_CACHE")):
-    os.environ["HF_HUB_CACHE"] = str(REPO / "models")
-
-from tribunal import hardware  # noqa: E402
+from tribunal import DEFAULT_MODEL, REPO, hardware  # noqa: E402  (tribunal sets the cache location)
 from tribunal.backend import Backend, pick_device, pick_dtype  # noqa: E402
+from huggingface_hub import constants, try_to_load_from_cache  # noqa: E402
 
 PROMPTS = {
     "neutral": "Answer the question briefly.",
@@ -28,7 +27,7 @@ PROMPTS = {
 
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--model", default="Qwen/Qwen3.5-2B")
+    p.add_argument("--model", default=DEFAULT_MODEL)
     p.add_argument("--questions", type=Path, default=REPO / "questions.csv")
     p.add_argument("--limit", type=int, help="only ask the first N questions")
     p.add_argument("--prompt-style", choices=PROMPTS, default="neutral")
@@ -45,9 +44,13 @@ def main():
     with open(args.questions, newline="") as f:
         questions = list(csv.DictReader(f))[: args.limit]
 
+    if not isinstance(try_to_load_from_cache(args.model, "config.json"), str):
+        sys.exit(f"{args.model} is not in {constants.HF_HUB_CACHE}.\n"
+                 f"Run first: python download.py --model {args.model}")
+
     device = args.device or pick_device()
     dtype = pick_dtype(device)
-    print(f"Loading {args.model} on {device} ({dtype}); weights cache: {os.environ.get('HF_HUB_CACHE') or os.environ['HF_HOME']}")
+    print(f"Loading {args.model} on {device} ({dtype}); weights cache: {constants.HF_HUB_CACHE}")
     backend = Backend(args.model, device, dtype, args.device_map)
     print(f"Loaded in {backend.load_seconds:.1f}s\n")
 
