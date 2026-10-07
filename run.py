@@ -6,7 +6,9 @@
 
 import argparse
 import csv
+import hashlib
 import os
+import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -18,12 +20,19 @@ os.environ.setdefault("HF_DEACTIVATE_ASYNC_LOAD", "1")
 
 from tribunal import DEFAULT_MODEL, REPO, hardware  # noqa: E402  (tribunal sets the cache location)
 from tribunal.backend import Backend, pick_device, pick_dtype  # noqa: E402
+import transformers  # noqa: E402
 from huggingface_hub import constants, try_to_load_from_cache  # noqa: E402
 
 PROMPTS = {
     "neutral": "Answer the question briefly.",
     "permission": "Answer the question briefly. If you are not sure, say so.",
 }
+
+
+def git_commit():
+    """Short commit hash, suffixed '-dirty' if there are uncommitted changes; 'unknown' outside git."""
+    out = subprocess.run(["git", "-C", str(REPO), "describe", "--always", "--dirty"], capture_output=True, text=True)
+    return out.stdout.strip() or "unknown"
 
 
 def parse_args():
@@ -75,6 +84,10 @@ def main():
 
     info = hardware.describe(device, dtype)
     info |= {
+        "transformers": transformers.__version__,
+        "git_commit": git_commit(),
+        # Fingerprint of the question bank, so runs can be compared only when they asked the same questions.
+        "questions_sha": hashlib.sha256(args.questions.read_bytes()).hexdigest()[:12],
         "model": args.model,
         "prompt_style": args.prompt_style,
         "load_seconds": round(backend.load_seconds, 1),
