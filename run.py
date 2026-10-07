@@ -11,9 +11,10 @@ import sys
 from datetime import date
 from pathlib import Path
 
-# Never download here; weights come from download.py. Downloading and loading in one process
-# can hang or segfault: hf-xet's download threads outlive the download and collide with the load.
+# Never download here; weights come from download.py (compute nodes have no internet anyway).
 os.environ["HF_HUB_OFFLINE"] = "1"
+# transformers' threaded weight loading intermittently segfaults or hangs on MPS; load sequentially.
+os.environ.setdefault("HF_DEACTIVATE_ASYNC_LOAD", "1")
 
 from tribunal import DEFAULT_MODEL, REPO, hardware  # noqa: E402  (tribunal sets the cache location)
 from tribunal.backend import Backend, pick_device, pick_dtype  # noqa: E402
