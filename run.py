@@ -53,6 +53,8 @@ def main():
     args = parse_args()
     with open(args.questions, newline="") as f:
         questions = list(csv.DictReader(f))[: args.limit]
+    if not questions:
+        sys.exit(f"No questions to ask: {args.questions} is empty or --limit is 0.")
 
     if not isinstance(try_to_load_from_cache(args.model, "config.json"), str):
         sys.exit(f"{args.model} is not in {constants.HF_HUB_CACHE}.\n"
