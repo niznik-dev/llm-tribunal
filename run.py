@@ -8,6 +8,7 @@ import argparse
 import csv
 import hashlib
 import os
+import statistics
 import subprocess
 import sys
 from datetime import datetime
@@ -93,7 +94,8 @@ def main():
         "model": args.model,
         "prompt_style": args.prompt_style,
         "load_seconds": round(backend.load_seconds, 1),
-        "mean_tok_s": round(sum(r["new_tokens"] for r in rows) / sum(r["seconds"] for r in rows), 1),
+        # Median, not mean: the first question pays one-time setup and runs several times slower.
+        "median_tok_s": statistics.median(r["tok_s"] for r in rows),
         "total_seconds": round(sum(r["seconds"] for r in rows), 1),
     }
     print("\n".join(f"{k:>14}: {v}" for k, v in info.items()))

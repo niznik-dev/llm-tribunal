@@ -29,8 +29,6 @@ class Backend:
         )
         self.model.eval()
         self.load_seconds = time.perf_counter() - start
-        # The first generate() pays one-time kernel setup; keep it out of question 1's tok/s.
-        self.generate([{"role": "user", "content": "Hi"}], max_new_tokens=4)
 
     @torch.inference_mode()
     def generate(self, messages, max_new_tokens=128):
