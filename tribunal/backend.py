@@ -46,7 +46,8 @@ class Backend:
             **inputs,
             max_new_tokens=max_new_tokens,
             do_sample=False,
-            # Unset the model's sampling defaults so greedy decoding runs without warnings.
+            # Some families (Llama, Gemma) ship sampling defaults in generation_config.json; clear them
+            # so greedy decoding runs without warnings. Qwen3.5 ships none, so this is a no-op there.
             temperature=None,
             top_p=None,
             top_k=None,
