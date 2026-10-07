@@ -55,7 +55,7 @@ llm-tribunal/
 │   ├── judge.py         # the preliminary verdict heuristics
 │   ├── hardware.py      # what machine am I on?
 │   └── report.py        # summary table
-├── results/             # one CSV per (machine, model, date), plus a cross-hardware table
+├── results/             # one CSV per run (machine, model, timestamp), plus a cross-hardware table
 └── job.slurm            # example batch script for a SLURM cluster
 ```
 

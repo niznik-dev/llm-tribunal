@@ -8,7 +8,7 @@ import argparse
 import csv
 import os
 import sys
-from datetime import date
+from datetime import datetime
 from pathlib import Path
 
 # Never download here; weights come from download.py (compute nodes have no internet anyway).
@@ -85,7 +85,7 @@ def main():
 
     args.out_dir.mkdir(exist_ok=True)
     model_slug = args.model.split("/")[-1]
-    out = args.out_dir / f"{hardware.machine_slug(info)}_{model_slug}_{args.prompt_style}_{date.today()}.csv"
+    out = args.out_dir / f"{hardware.machine_slug(info)}_{model_slug}_{args.prompt_style}_{datetime.now():%Y-%m-%dT%H%M%S}.csv"
     with open(out, "w", newline="") as f:
         # Run metadata rides along as leading '#' lines. Skip them by count, not with pandas'
         # comment='#', which would also truncate any response containing '#'.
