@@ -93,7 +93,7 @@ def main():
         writer = csv.DictWriter(f, fieldnames=rows[0].keys())
         writer.writeheader()
         writer.writerows(rows)
-    print(f"\nWrote {out.relative_to(REPO)}")
+    print(f"\nWrote {out.resolve()}")
 
 
 if __name__ == "__main__":
