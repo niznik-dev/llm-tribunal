@@ -11,6 +11,12 @@ def _cpu_name():
     if platform.system() == "Darwin":
         out = subprocess.run(["sysctl", "-n", "machdep.cpu.brand_string"], capture_output=True, text=True)
         return out.stdout.strip() or platform.processor()
+    if platform.system() == "Linux":
+        # platform.processor() is just "x86_64" here, which would put every Linux CPU in one bucket.
+        with open("/proc/cpuinfo") as f:
+            for line in f:
+                if line.startswith("model name"):
+                    return line.split(":", 1)[1].strip()
     return platform.processor() or platform.machine()
 
 
@@ -35,5 +41,5 @@ def describe(device, dtype):
 
 def machine_slug(info):
     """Short, hostname-free name for results files, e.g. 'apple-m2-pro' or 'nvidia-a100-sxm4-80gb'."""
-    name = info.get("gpu", info["cpu"])
+    name = info.get("gpu", info["cpu"]).split(" @ ")[0]  # drop Intel's clock-speed suffix
     return "-".join(name.lower().replace("(r)", "").replace("(tm)", "").split())
