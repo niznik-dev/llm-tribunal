@@ -41,17 +41,24 @@ def git_commit():
     return out.stdout.strip() or "unknown"
 
 
+def positive_int(text):
+    n = int(text)
+    if n < 1:
+        raise argparse.ArgumentTypeError(f"must be 1 or more, got {n}")
+    return n
+
+
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--model", default=DEFAULT_MODEL)
     p.add_argument("--questions", type=Path, default=REPO / "questions.csv")
-    p.add_argument("--limit", type=int, help="only ask the first N questions")
+    p.add_argument("--limit", type=positive_int, help="only ask the first N questions")
     p.add_argument("--prompt-style", choices=PROMPTS, default="neutral")
     p.add_argument("--device", choices=["cuda", "mps", "cpu"], help="default: best available")
     p.add_argument("--device-map", choices=["single", "auto"], default="single",
                    help="'auto' splits a model too big for one GPU across all visible GPUs")
     p.add_argument("--max-new-tokens", type=int, default=128)
-    p.add_argument("--samples", type=int, default=1, help="answers per question; >1 needs --temperature > 0")
+    p.add_argument("--samples", type=positive_int, default=1, help="answers per question; >1 needs --temperature > 0")
     p.add_argument("--temperature", type=float, default=0.0, help="0 = greedy (default)")
     p.add_argument("--seed", type=int, default=0, help="makes sampled runs repeatable")
     p.add_argument("--out-dir", type=Path, default=REPO / "results")
@@ -63,7 +70,7 @@ def main():
     with open(args.questions, newline="") as f:
         questions = list(csv.DictReader(f))[: args.limit]
     if not questions:
-        sys.exit(f"No questions to ask: {args.questions} is empty or --limit is 0.")
+        sys.exit(f"No questions to ask: {args.questions} is empty.")
 
     if args.samples > 1 and args.temperature == 0:
         sys.exit("--samples > 1 with greedy decoding would repeat the same answer; set --temperature too.")
