@@ -37,7 +37,10 @@ PROMPTS = {
 
 def git_commit():
     """Short commit hash, suffixed '-dirty' if there are uncommitted changes; 'unknown' outside git."""
-    out = subprocess.run(["git", "-C", str(REPO), "describe", "--always", "--dirty"], capture_output=True, text=True)
+    try:
+        out = subprocess.run(["git", "-C", str(REPO), "describe", "--always", "--dirty"], capture_output=True, text=True)
+    except FileNotFoundError:  # git isn't installed
+        return "unknown"
     return out.stdout.strip() or "unknown"
 
 
