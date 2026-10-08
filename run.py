@@ -114,6 +114,9 @@ def main():
         "temperature": args.temperature,
         "samples": args.samples,
         "seed": args.seed,
+        "max_new_tokens": args.max_new_tokens,  # answers that hit this were cut off mid-sentence
+        "limit": args.limit or "all",
+        "device_map": args.device_map,
         "load_seconds": round(backend.load_seconds, 1),
         # Median, not mean: the first question pays one-time setup and runs several times slower.
         "median_tok_s": statistics.median(r["tok_s"] for r in rows),
