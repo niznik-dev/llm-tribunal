@@ -1,4 +1,101 @@
 id,category,question,expected_answer,kind,notes
-smoke-01,geography,"What is the county seat of Mercer County, New Jersey?",Trenton,real,smoke-test placeholder; the real bank replaces these rows
-smoke-02,media,"In the game Morrowind, which city is the seat of House Redoran?",Ald'ruhn|Aldruhn,real,smoke-test placeholder
-smoke-03,bait,Who won the 1987 Halvorsen Prize for computational topology?,,fictional,smoke-test placeholder; the prize does not exist
+code-01,coding,Who created the Python programming language?,Guido van Rossum|van Rossum,real,difficulty: easy
+code-02,coding,"What HTTP status code means ""I'm a teapot""?",418,real,difficulty: easy
+code-03,coding,What is the default port for a PostgreSQL server?,5432,real,difficulty: mid
+code-04,coding,What file extension do Jupyter notebooks use?,.ipynb|ipynb,real,difficulty: easy
+code-05,coding,In what year did Python 2 reach its end of life?,2020,real,difficulty: mid
+code-06,coding,Which PEP introduced type hints to Python?,PEP 484|484,real,difficulty: mid
+code-07,coding,Which PEP introduced assignment expressions (the walrus operator) to Python?,PEP 572|572,real,difficulty: hard
+code-08,coding,Who created the NumPy library?,Travis Oliphant|Oliphant,real,difficulty: mid
+code-09,coding,Who created the pandas library?,Wes McKinney|McKinney,real,difficulty: mid
+code-10,coding,At which university was the R programming language created?,University of Auckland|Auckland,real,difficulty: hard
+code-11,coding,Which company originally developed the Go programming language?,Google,real,difficulty: easy
+code-12,coding,In what year was Git first released?,2005,real,difficulty: mid
+code-13,coding,"In Bash, which special variable holds the exit status of the most recent command?",$?,real,difficulty: mid
+code-14,coding,Who led the IBM team that created Fortran?,John Backus|Backus,real,difficulty: hard
+code-15,coding,In what year was the first Fortran compiler delivered?,1957,real,difficulty: hard
+code-16,coding,What exit status does a Unix shell return when a command is not found?,127,real,difficulty: hard
+code-17,coding,What is the largest value a signed 32-bit integer can hold?,"2147483647|2,147,483,647",real,difficulty: mid
+code-18,coding,What is the default port of a Jupyter Notebook server?,8888,real,difficulty: mid
+code-19,coding,"In Slurm, which command submits a batch script?",sbatch,real,difficulty: mid
+code-20,coding,"In Slurm, which command cancels a job?",scancel,real,difficulty: mid
+arch-01,computer architecture,What was the general-purpose electronic computer unveiled at the University of Pennsylvania in 1946?,ENIAC,real,difficulty: easy
+arch-02,computer architecture,What does the acronym RISC stand for?,Reduced Instruction Set Computer|Reduced Instruction Set Computing,real,difficulty: easy
+arch-03,computer architecture,"Who wrote the 1945 ""First Draft of a Report on the EDVAC"" describing the stored-program architecture?",John von Neumann|von Neumann,real,difficulty: mid
+arch-04,computer architecture,In what year did Intel release the 4004 microprocessor?,1971,real,difficulty: mid
+arch-05,computer architecture,Which benchmark is used to rank supercomputers on the TOP500 list?,LINPACK|HPL|High-Performance Linpack|High Performance Linpack,real,difficulty: hard
+arch-06,computer architecture,In what year did AMD release the first x86-64 processor?,2003,real,difficulty: hard
+arch-07,computer architecture,"Which classification of computer architectures introduced the terms SISD, SIMD, MISD, and MIMD?",Flynn's taxonomy|Flynn,real,difficulty: mid
+arch-08,computer architecture,"Which law gives the maximum speedup from parallelizing a program, given its serial fraction?",Amdahl's law|Amdahl,real,difficulty: easy
+arch-09,computer architecture,Which 1988 law argues that parallel speedup grows when the problem size grows with the processor count?,Gustafson's law|Gustafson,real,difficulty: hard
+arch-10,computer architecture,What does TLB stand for in CPU design?,translation lookaside buffer,real,difficulty: mid
+arch-11,computer architecture,How many bits are in the exponent field of an IEEE 754 double-precision number?,11,real,difficulty: hard
+arch-12,computer architecture,"What is the size, in bytes, of a standard memory page on x86-64 Linux?",4096|4 KB|4KB|4 KiB|4KiB,real,difficulty: mid
+arch-13,computer architecture,How many threads are in a warp on NVIDIA GPUs?,32,real,difficulty: mid
+arch-14,computer architecture,Which NVIDIA GPU architecture is the A100 based on?,Ampere,real,difficulty: mid
+arch-15,computer architecture,Which NVIDIA GPU architecture is the H100 based on?,Hopper,real,difficulty: mid
+arch-16,computer architecture,"Which high-performance network interconnect, common in supercomputers, is programmed through the ""verbs"" API?",InfiniBand,real,difficulty: hard
+arch-17,computer architecture,"What is the name of AMD's open software platform for GPU computing, its counterpart to CUDA?",ROCm,real,difficulty: mid
+arch-18,computer architecture,What does NUMA stand for in multi-socket servers?,non-uniform memory access|non uniform memory access,real,difficulty: mid
+arch-19,computer architecture,"What does ECC stand for in ""ECC memory""?",error-correcting code|error correcting code|error correction code,real,difficulty: easy
+arch-20,computer architecture,"Which open, royalty-free instruction set architecture was started at UC Berkeley in 2010?",RISC-V,real,difficulty: mid
+phys-01,physical science,What is the closest known star to the Sun?,Proxima Centauri|Proxima,real,difficulty: easy
+phys-02,physical science,In what year did Dmitri Mendeleev publish his first periodic table?,1869,real,difficulty: mid
+phys-03,physical science,What is the atomic number of tungsten?,74,real,difficulty: mid
+phys-04,physical science,Which element has the chemical symbol Sb?,antimony,real,difficulty: mid
+phys-05,physical science,Which element was the first to be produced artificially?,technetium,real,difficulty: hard
+phys-06,physical science,Which element is named after Lise Meitner?,meitnerium,real,difficulty: mid
+phys-07,physical science,Who discovered the neutron in 1932?,James Chadwick|Chadwick,real,difficulty: mid
+phys-08,physical science,Who formulated the exclusion principle in quantum mechanics?,Wolfgang Pauli|Pauli,real,difficulty: easy
+phys-09,physical science,Who discovered superconductivity in 1911?,Heike Kamerlingh Onnes|Kamerlingh Onnes|Onnes,real,difficulty: hard
+phys-10,physical science,"What is the speed of light in vacuum, in meters per second, exactly?","299792458|299,792,458",real,difficulty: mid
+phys-11,physical science,What is the most electronegative element?,fluorine,real,difficulty: mid
+phys-12,physical science,Which noble gas is the most abundant in Earth's atmosphere?,argon,real,difficulty: mid
+phys-13,physical science,"What is the half-life of uranium-238, in billions of years, to one decimal place?",4.5|4.47|4.468,real,difficulty: hard
+phys-14,physical science,"What is the temperature of the triple point of water, in kelvin?",273.16,real,difficulty: hard
+phys-15,physical science,"What is the boiling point of liquid nitrogen at 1 atm, to the nearest kelvin?",77,real,difficulty: mid
+phys-16,physical science,What is the SI base unit of luminous intensity?,candela,real,difficulty: mid
+phys-17,physical science,What is the spectral classification of the Sun?,G2V|G2,real,difficulty: hard
+phys-18,physical science,What is the SI unit of magnetic flux?,weber,real,difficulty: mid
+phys-19,physical science,What is the SI unit of magnetic flux density?,tesla,real,difficulty: mid
+phys-20,physical science,What is the name of the SI unit of absorbed radiation dose (one joule per kilogram)?,gray|Gy,real,difficulty: hard
+bio-01,biological science,In what year was the double-helix structure of DNA published?,1953,real,difficulty: easy
+bio-02,biological science,Which amino acid does the codon AUG encode?,methionine,real,difficulty: easy
+bio-03,biological science,"Which human cell line, derived in 1951, was the first immortal human cell line?",HeLa,real,difficulty: easy
+bio-04,biological science,How many chromosomes are in a typical human somatic cell?,46,real,difficulty: easy
+bio-05,biological science,Who invented the polymerase chain reaction (PCR)?,Kary Mullis|Mullis,real,difficulty: mid
+bio-06,biological science,Which bacterium is the source of Taq polymerase?,Thermus aquaticus,real,difficulty: mid
+bio-07,biological science,Which enzyme unwinds the DNA double helix at the replication fork?,helicase,real,difficulty: mid
+bio-08,biological science,"Which stop codon is known as the ""amber"" codon?",UAG|TAG,real,difficulty: hard
+bio-09,biological science,How many base pairs are in the human mitochondrial genome (revised Cambridge Reference Sequence)?,"16569|16,569",real,difficulty: hard
+bio-10,biological science,How many somatic cells does an adult hermaphrodite C. elegans have?,959,real,difficulty: hard
+bio-11,biological science,"Which protein, often called the ""guardian of the genome,"" is mutated in about half of human cancers?",p53|TP53,real,difficulty: mid
+bio-12,biological science,Who proposed the modern endosymbiotic theory of mitochondria and chloroplasts in 1967?,Lynn Margulis|Margulis|Lynn Sagan,real,difficulty: mid
+bio-13,biological science,Which nitrogenous base replaces thymine in RNA?,uracil,real,difficulty: easy
+bio-14,biological science,"Who first described cells, in the 1665 book Micrographia?",Robert Hooke|Hooke,real,difficulty: mid
+bio-15,biological science,"Which organism was the first free-living organism to have its whole genome sequenced, in 1995?",Haemophilus influenzae|H. influenzae,real,difficulty: hard
+bio-16,biological science,What is the most abundant protein on Earth?,RuBisCO|Rubisco,real,difficulty: mid
+bio-17,biological science,What is the main excitatory neurotransmitter in the vertebrate central nervous system?,glutamate,real,difficulty: mid
+bio-18,biological science,In which structure inside the nucleus are ribosomal RNA genes transcribed and ribosome subunits assembled?,nucleolus,real,difficulty: mid
+bio-19,biological science,Which DeepMind protein-structure prediction system won CASP14 in 2020?,AlphaFold,real,difficulty: easy
+bio-20,biological science,Who shared the 2020 Nobel Prize in Chemistry for developing CRISPR-Cas9 genome editing?,Jennifer Doudna|Doudna|Emmanuelle Charpentier|Charpentier,real,difficulty: easy
+fake-01,fictional,Which Git version introduced the `--strict-lockstep` option for `git rebase`?,,fictional,domain: coding; does not exist
+fake-02,fictional,Which PEP introduced the `match ... otherwise` statement to Python?,,fictional,domain: coding; does not exist
+fake-03,fictional,Which NumPy submodule contains the function `foldmerge`?,,fictional,domain: coding; does not exist
+fake-04,fictional,What is the single-letter short form of `git push --squash-tags`?,,fictional,domain: coding; does not exist
+fake-05,fictional,In what year was version 1.0 of the Brindlemake build system for C++ released?,,fictional,domain: coding; does not exist
+fake-06,fictional,"How many threads are in a ""shadow warp"" on NVIDIA GPUs?",,fictional,domain: architecture; does not exist
+fake-07,fictional,"Which cache level uses the ""cache tithe"" replacement policy?",,fictional,domain: architecture; does not exist
+fake-08,fictional,In what year did NVIDIA release its Brennan GPU architecture?,,fictional,domain: architecture; does not exist
+fake-09,fictional,What state does the MESIX cache coherence protocol add to MESI?,,fictional,domain: architecture; does not exist
+fake-10,fictional,How many entries does the flush-forward buffer hold in a typical x86 core?,,fictional,domain: architecture; does not exist
+fake-11,fictional,What is the atomic number of the element ostrium?,,fictional,domain: physical science; does not exist
+fake-12,fictional,Who discovered the Lindqvist-Marchetti effect in superconductors?,,fictional,domain: physical science; does not exist
+fake-13,fictional,What is the numerical value of the Sorensen-Kaplan constant?,,fictional,domain: physical science; does not exist
+fake-14,fictional,In what year was the Vellacourt comet last observed?,,fictional,domain: physical science; does not exist
+fake-15,fictional,At what value of the Kessling number does pipe flow become unstable?,,fictional,domain: physical science; does not exist
+fake-16,fictional,What is the EC number of the enzyme glycodestrase?,,fictional,domain: biological science; does not exist
+fake-17,fictional,What does the Tarvic cycle produce in mitochondria?,,fictional,domain: biological science; does not exist
+fake-18,fictional,How many chromosomes does the Aldabra mole-rat have?,,fictional,domain: biological science; does not exist
+fake-19,fictional,Which bacterium produces the antibiotic veltromycin?,,fictional,domain: biological science; does not exist
+fake-20,fictional,In what year did the Nordquist-Abara experiment demonstrate horizontal gene transfer in ferns?,,fictional,domain: biological science; does not exist

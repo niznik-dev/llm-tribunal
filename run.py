@@ -29,10 +29,19 @@ from tribunal.backend import Backend, pick_device, pick_dtype  # noqa: E402
 import transformers  # noqa: E402
 from huggingface_hub import constants, try_to_load_from_cache  # noqa: E402
 
+# The system prompt combines how long the answer may be (--format) with whether the model is
+# explicitly allowed to admit uncertainty (--prompt-style). Shorter answers run faster and are easier
+# to score. Small wording changes matter: with the sentence format, offering "UNKNOWN" instead of
+# "IDK" let the 4B reject about twice as many made-up questions, likely because it labels the answer
+# as unknown rather than asking the model to confess.
 PROMPTS = {
-    "neutral": "Answer the question briefly.",
-    "permission": "Answer the question briefly. If you are not sure, say so.",
+    ("brief", "neutral"): "Answer the question briefly.",
+    ("brief", "permission"): 'Answer the question briefly. If you are not sure, reply "UNKNOWN".',
+    ("sentence", "neutral"): "Answer in one short sentence.",
+    ("sentence", "permission"): 'Answer in one short sentence, or reply "UNKNOWN" if you are not sure.',
 }
+FORMATS = sorted({f for f, _ in PROMPTS})
+STYLES = sorted({s for _, s in PROMPTS})
 
 
 def git_commit():
@@ -46,7 +55,8 @@ def parse_args():
     p.add_argument("--model", default=DEFAULT_MODEL)
     p.add_argument("--questions", type=Path, default=REPO / "questions.csv")
     p.add_argument("--limit", type=int, help="only ask the first N questions")
-    p.add_argument("--prompt-style", choices=PROMPTS, default="neutral")
+    p.add_argument("--format", choices=FORMATS, default="brief", help="how long answers may be")
+    p.add_argument("--prompt-style", choices=STYLES, default="neutral")
     p.add_argument("--device", choices=["cuda", "mps", "cpu"], help="default: best available")
     p.add_argument("--device-map", choices=["single", "auto"], default="single",
                    help="'auto' splits a model too big for one GPU across all visible GPUs")
@@ -81,7 +91,7 @@ def main():
     rows = []
     for q in questions:
         messages = [
-            {"role": "system", "content": PROMPTS[args.prompt_style]},
+            {"role": "system", "content": PROMPTS[args.format, args.prompt_style]},
             {"role": "user", "content": q["question"]},
         ]
         print(f"[{q['id']}] {q['question']}")
@@ -92,6 +102,7 @@ def main():
             response, new_tokens, seconds = backend.generate(messages, args.max_new_tokens, args.temperature)
             rows.append({
                 **q,
+                "format": args.format,
                 "prompt_style": args.prompt_style,
                 "sample": sample,
                 "response": response,
@@ -110,6 +121,7 @@ def main():
         # Fingerprint of the question bank, so runs can be compared only when they asked the same questions.
         "questions_sha": hashlib.sha256(args.questions.read_bytes()).hexdigest()[:12],
         "model": args.model,
+        "format": args.format,
         "prompt_style": args.prompt_style,
         "temperature": args.temperature,
         "samples": args.samples,
@@ -123,7 +135,7 @@ def main():
 
     args.out_dir.mkdir(exist_ok=True)
     model_slug = args.model.split("/")[-1]
-    out = args.out_dir / f"{hardware.machine_slug(info)}_{model_slug}_{args.prompt_style}_{datetime.now():%Y-%m-%dT%H%M%S}.csv"
+    out = args.out_dir / f"{hardware.machine_slug(info)}_{model_slug}_{args.format}-{args.prompt_style}_{datetime.now():%Y-%m-%dT%H%M%S}.csv"
     with open(out, "w", newline="") as f:
         # Run metadata rides along as leading '#' lines. Skip them by count, not with pandas'
         # comment='#', which would also truncate any response containing '#'.
