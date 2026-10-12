@@ -141,7 +141,7 @@ def main():
         "device_map": args.device_map,
         "load_seconds": round(backend.load_seconds, 1),
         # Median, not mean: the first question pays one-time setup and runs several times slower.
-        "median_tok_s": statistics.median(r["tok_s"] for r in rows),
+        "median_tok_s": round(statistics.median(r["tok_s"] for r in rows), 1),
         "total_seconds": round(sum(r["seconds"] for r in rows), 1),
     }
     print("\n".join(f"{k:>14}: {v}" for k, v in info.items()))
