@@ -13,4 +13,4 @@ slurm-*.out
 models/
 
 # Run outputs stay local; commit a result on purpose with `git add -f`
-results/*.csv
+results/**/*.csv
