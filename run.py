@@ -6,6 +6,7 @@ hardware and software details as leading '#' lines.
 
     python run.py --limit 3
     python run.py --model Qwen/Qwen3.5-9B --prompt-style permission
+    python run.py --model /path/to/a/model/folder   # weights saved as a plain folder
 """
 
 import argparse
@@ -53,6 +54,24 @@ def git_commit():
     return out.stdout.strip() or "unknown"
 
 
+def model_source(model):
+    """(repo id, revision) of the weights behind --model; 'unknown' where it can't be told."""
+    path = Path(model)
+    if path.is_dir():
+        # A plain folder carries no version info of its own. REVISION.txt is an optional note,
+        # written when the folder was staged, with 'repo: <id>' and 'revision: <commit>' lines.
+        fields = {}
+        if (path / "REVISION.txt").is_file():
+            for line in (path / "REVISION.txt").read_text().splitlines():
+                key, sep, value = line.partition(":")
+                if sep and not line[:1].isspace():  # skip a long value's wrapped continuation lines
+                    fields[key.strip()] = value.strip()
+        return fields.get("repo", "unknown"), fields.get("revision", "unknown")
+    # The cache files each download under snapshots/<commit>/, so that folder's name is the revision.
+    config = try_to_load_from_cache(model, "config.json")
+    return model, Path(config).parent.name if isinstance(config, str) else "unknown"
+
+
 def positive_int(text):
     n = int(text)
     if n < 1:
@@ -62,7 +81,7 @@ def positive_int(text):
 
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--model", default=DEFAULT_MODEL)
+    p.add_argument("--model", default=DEFAULT_MODEL, help="a Hugging Face repo id, or a folder of weights")
     p.add_argument("--questions", type=Path, default=REPO / "questions.csv")
     p.add_argument("--limit", type=positive_int, help="only ask the first N questions")
     p.add_argument("--format", choices=FORMATS, default="brief", help="how long answers may be")
@@ -88,7 +107,8 @@ def main():
     if args.samples > 1 and args.temperature == 0:
         sys.exit("--samples > 1 with greedy decoding would repeat the same answer; set --temperature too.")
 
-    if not isinstance(try_to_load_from_cache(args.model, "config.json"), str):
+    # A repo id must already be in the cache; a folder is loaded as-is, with no lookup.
+    if not Path(args.model).is_dir() and not isinstance(try_to_load_from_cache(args.model, "config.json"), str):
         sys.exit(f"{args.model} is not in {constants.HF_HUB_CACHE}.\n"
                  f"Run first: python download.py --model {args.model}")
 
@@ -125,12 +145,16 @@ def main():
         print()
 
     info = hardware.describe(device, dtype)
+    repo, revision = model_source(args.model)
     info |= {
         "transformers": transformers.__version__,
         "git_commit": git_commit(),
         # Fingerprint of the question bank, so runs can be compared only when they asked the same questions.
         "questions_sha": hashlib.sha256(args.questions.read_bytes()).hexdigest()[:12],
         "model": args.model,
+        # Which weights, exactly: a repo id can point at newer weights later, and a folder can be replaced.
+        "model_repo": repo,
+        "model_revision": revision,
         "format": args.format,
         "prompt_style": args.prompt_style,
         "temperature": args.temperature,
@@ -147,7 +171,7 @@ def main():
     print("\n".join(f"{k:>14}: {v}" for k, v in info.items()))
 
     args.out_dir.mkdir(exist_ok=True)
-    model_slug = args.model.split("/")[-1]
+    model_slug = Path(args.model).name  # last part of a repo id or a folder path
     out = args.out_dir / f"{hardware.machine_slug(info)}_{model_slug}_{args.format}-{args.prompt_style}_{datetime.now():%Y-%m-%dT%H%M%S}.csv"
     with open(out, "w", newline="") as f:
         # Run metadata rides along as leading '#' lines. Skip them by count, not with pandas'
