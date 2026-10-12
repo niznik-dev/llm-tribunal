@@ -1,0 +1,22 @@
+# Optional fast kernels for NVIDIA GPUs. Install into the llm-tribunal env:
+#     pip install -r requirements-cuda.txt
+#
+# Qwen 3.5 and newer mix ordinary attention with linear-attention layers. Without these
+# kernels, transformers runs those layers as slow reference PyTorch code and says so in a
+# warning; answers are identical either way, only tokens per second change.
+#
+# NVIDIA only: transformers uses the package whenever it imports, without checking the device,
+# so on a Linux machine without a GPU it would be handed CPU tensors and fail. (On a Mac it
+# can't import at all, so it is simply ignored.)
+#
+# What to expect: on one A100 answering one question at a time, Qwen3.8-27B went from 12.6
+# to 13.7 tokens/s (about 9%), plus a one-time ~30 s compile on the first question. Gains are
+# modest because each new token means reading every weight from GPU memory, which these
+# kernels don't change; long prompts should benefit more.
+#
+# Not included yet: causal_conv1d, the other kernel transformers warns about (two warnings
+# remain). It compiles CUDA code at install time, a common failure point on clusters, and
+# we estimate only a few percent from it. That is untested so far, so this may change.
+#
+# Floor = the version tested here; the ceiling stops the next, possibly breaking, release (pre-1.0).
+flash-linear-attention>=0.5.2,<0.6
