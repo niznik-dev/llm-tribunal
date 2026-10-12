@@ -72,7 +72,7 @@ def report_one(path, meta, rows, markdown):
         detail_line += " (max_new_tokens not recorded in this file, so truncation wasn't checked)"
 
     print(f"\n{'### ' if markdown else ''}{describe(meta)}")
-    print(f"{path.name} · {meta['samples']} sample(s) per question · {meta['median_tok_s']} tok/s median · "
+    print(f"{path.name} · {meta['samples']} sample(s) per question · {float(meta['median_tok_s']):.1f} tok/s median · "
           f"{float(meta['total_seconds']) / 60:.1f} min\n")
     print(table(["category", *VERDICTS], body, markdown))
     print(f"\nSub-labels: {detail_line}")
@@ -87,7 +87,7 @@ def summary_row(meta, rows):
     toks = statistics.median(int(r["new_tokens"]) for r in rows)
     return [meta["model"].split("/")[-1], f"{meta.get('format', '?')}-{meta['prompt_style']}",
             f"{100 * knows / len(real):.0f}%", f"{100 * caught / len(fake):.0f}%", f"{toks:.0f}",
-            meta["median_tok_s"], f"{float(meta['total_seconds']) / 60:.1f}"]
+            f"{float(meta['median_tok_s']):.1f}", f"{float(meta['total_seconds']) / 60:.1f}"]
 
 
 def annotate(path, header_lines, rows):
