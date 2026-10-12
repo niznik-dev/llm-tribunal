@@ -14,14 +14,13 @@ short enough to read in one sitting.
 ## Quick start
 
 ```bash
+git clone https://github.com/niznik-dev/llm-tribunal && cd llm-tribunal
 conda env create -f environment.yml && conda activate llm-tribunal
 python download.py            # Qwen3.5-2B, ~4 GB, into ./models
 python run.py --limit 3       # ask 3 questions, write a CSV to results/
 ```
 
-Results files record the git commit that produced them, which needs [git](https://git-scm.com/downloads)
-installed and the repo cloned (not downloaded as a zip). Without it, runs still work and the
-commit is recorded as `unknown`.
+Downloaded a zip instead? Everything works; results just record the commit as `unknown`.
 
 Weights land in `./models/` unless `HF_HOME` or `HF_HUB_CACHE` is set. `run.py` never
 downloads; for another model, run `python download.py --model <id>` first.
