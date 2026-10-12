@@ -51,10 +51,16 @@ def table(headers, body, markdown):
     return "\n".join([fmt(cells[0]), "  ".join("-" * w for w in widths)] + [fmt(r) for r in cells[1:]])
 
 
+def model_name(meta):
+    """The model's repo id when known, else whatever --model was (files from before model_repo was recorded)."""
+    repo = meta.get("model_repo", "unknown")
+    return meta["model"] if repo == "unknown" else repo
+
+
 def describe(meta):
     """One line naming the run: model, prompt, and machine."""
     machine = meta.get("gpu") or meta.get("cpu", "?")
-    return (f"{meta['model']} · {meta.get('format', '?')}-{meta['prompt_style']} · "
+    return (f"{model_name(meta)} · {meta.get('format', '?')}-{meta['prompt_style']} · "
             f"{machine} ({meta['device']}, {meta['dtype']})")
 
 
@@ -85,7 +91,7 @@ def summary_row(meta, rows):
     knows = sum(r["prelim_verdict"] == "knows" for r in real)
     caught = sum(r["prelim_verdict"] in ("says-unknown", "rejects-premise") for r in fake)
     toks = statistics.median(int(r["new_tokens"]) for r in rows)
-    return [meta["model"].split("/")[-1], f"{meta.get('format', '?')}-{meta['prompt_style']}",
+    return [model_name(meta).split("/")[-1], f"{meta.get('format', '?')}-{meta['prompt_style']}",
             f"{100 * knows / len(real):.0f}%", f"{100 * caught / len(fake):.0f}%", f"{toks:.0f}",
             f"{float(meta['median_tok_s']):.1f}", f"{float(meta['total_seconds']) / 60:.1f}"]
 
