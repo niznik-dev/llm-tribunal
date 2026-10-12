@@ -11,3 +11,6 @@ slurm-*.out
 
 # Model weights: run.py points HF_HUB_CACHE here unless HF_HOME/HF_HUB_CACHE is already set
 models/
+
+# Run outputs stay local; commit a result on purpose with `git add -f`
+results/*.csv
