@@ -9,7 +9,8 @@ a leaderboard. The goal is to *see where a small model's knowledge gets lossy*, 
 short enough to read in one sitting.
 
 > **Status: working demo.** Download a model, ask it the question bank, and get
-> preliminary verdicts per category. An example SLURM script (`job.slurm`) is next.
+> preliminary verdicts per category. Example SLURM scripts run it on one GPU (`job.slurm`,
+> tested on della) or four (`job-multigpu.slurm`, not yet tested).
 
 ## Quick start
 
@@ -22,6 +23,11 @@ python report.py results/*.csv  # judge the answers and print verdict tables
 ```
 
 Downloaded a zip instead? Everything works; results just record the commit as `unknown`.
+
+On an NVIDIA GPU, also run `pip install -r requirements-cuda.txt`. It adds optional fast
+kernels for Qwen 3.5's linear-attention layers; without them, transformers warns that it is
+using slower reference code. Skip it on a Mac or a machine without an NVIDIA GPU. The speedup
+is modest, and one kernel (`causal_conv1d`) is left out for now; the file explains both.
 
 Weights land in `./models/` unless `HF_HOME` or `HF_HUB_CACHE` is set. `run.py` never
 downloads; for another model, run `python download.py --model <id>` first.
@@ -78,6 +84,7 @@ filled in next to an empty `human_verdict` column. Reviewing that column is part
 ```
 llm-tribunal/
 ├── environment.yml      # conda: python, pytorch, transformers, accelerate
+├── requirements-cuda.txt # optional: fast kernels, NVIDIA GPUs only
 ├── questions.csv        # the question bank (id, category, question, expected_answer, kind, notes)
 ├── download.py          # fetch a model's weights into ./models
 ├── run.py               # load model, ask every question, write a results CSV
@@ -88,7 +95,8 @@ llm-tribunal/
 │   └── hardware.py      # what machine am I on?
 ├── models/              # downloaded weights (gitignored)
 ├── results/             # one CSV per run (machine, model, prompt, timestamp); stays local
-└── job.slurm            # example batch script for a SLURM cluster (planned)
+├── job.slurm            # example SLURM batch script, one GPU
+└── job-multigpu.slurm   # the same for a model split across four GPUs
 ```
 
 ## Hardware tested
@@ -96,6 +104,8 @@ llm-tribunal/
 | Machine | Chip / GPU | Memory | Device | Model | tok/s |
 |---|---|---|---|---|---|
 | MacBook Pro 16" (2023) | Apple M2 Pro | 32 GB | `mps` | Qwen3.5-2B | *pending* |
+| Princeton della | NVIDIA A100 80GB PCIe | 80 GB | `cuda` | Qwen3.8-27B | 14 |
+| Princeton della | 4× NVIDIA A100-SXM4-80GB | 4 × 80 GB | `cuda` | Qwen3.5-122B-A10B | 10 (3-question smoke test) |
 
 ## License
 

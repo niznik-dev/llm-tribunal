@@ -84,6 +84,11 @@ def report_one(path, meta, rows, markdown):
     print(f"\nSub-labels: {detail_line}")
 
 
+def pct(n, total):
+    # A --limit run can hold no fictional questions at all; show n/a rather than divide by zero.
+    return f"{100 * n / total:.0f}%" if total else "n/a"
+
+
 def summary_row(meta, rows):
     """Headline numbers for one run: how often it knew real answers, how often it caught fake questions."""
     real = [r for r in rows if r["kind"] == "real"]
@@ -92,7 +97,7 @@ def summary_row(meta, rows):
     caught = sum(r["prelim_verdict"] in ("says-unknown", "rejects-premise") for r in fake)
     toks = statistics.median(int(r["new_tokens"]) for r in rows)
     return [model_name(meta).split("/")[-1], f"{meta.get('format', '?')}-{meta['prompt_style']}",
-            f"{100 * knows / len(real):.0f}%", f"{100 * caught / len(fake):.0f}%", f"{toks:.0f}",
+            pct(knows, len(real)), pct(caught, len(fake)), f"{toks:.0f}",
             f"{float(meta['median_tok_s']):.1f}", f"{float(meta['total_seconds']) / 60:.1f}"]
 
 
