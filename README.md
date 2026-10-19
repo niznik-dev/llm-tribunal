@@ -9,8 +9,8 @@ a leaderboard. The goal is to *see where a small model's knowledge gets lossy*, 
 short enough to read in one sitting.
 
 > **Status: working demo.** Download a model, ask it the question bank, and get
-> preliminary verdicts per category. Example SLURM scripts run it on one GPU (`job.slurm`,
-> tested on della) or four (`job-multigpu.slurm`, smoke-tested on della).
+> preliminary verdicts per category. Example SLURM scripts run it on one GPU (`slurm/della/job.slurm`,
+> tested) or four (`slurm/della/job-multigpu.slurm`, smoke-tested).
 
 ## Quick start
 
@@ -40,27 +40,30 @@ model's repo id and revision, read from the cache or, for a folder, from an opti
 
 ## Running on a cluster
 
-Two example SLURM scripts, written for Princeton's della and easy to adapt to other clusters:
-`job.slurm` for one GPU, `job-multigpu.slurm` for four. Anything after the script name goes
-straight to `run.py`:
+Two example SLURM scripts in `slurm/della/`, written for Princeton's della: `job.slurm` for one
+GPU, `job-multigpu.slurm` for four. Submit from the repo root (the scripts call `python run.py`
+and write logs to `logs/`). Anything after the script name goes straight to `run.py`:
 
 ```bash
-sbatch job.slurm --model /path/to/Qwen3.8-27B --limit 3
-sbatch job.slurm --model Qwen/Qwen3.5-9B --samples 5 --temperature 0.7
+sbatch slurm/della/job.slurm --model /path/to/Qwen3.8-27B --limit 3
+sbatch slurm/della/job.slurm --model Qwen/Qwen3.5-9B --samples 5 --temperature 0.7
 ```
 
 - **Download first, on a login node.** Compute nodes have no internet. Set `HF_HUB_CACHE`
   to a scratch directory (home quotas are small) before `python download.py --model <id>`,
   and keep the same setting in the job, either exported in your shell or uncommented in the script.
 - **`#SBATCH` lines are defaults.** Flags passed to `sbatch` override them:
-  `sbatch --time=2:00:00 job.slurm ...`.
+  `sbatch --time=2:00:00 slurm/della/job.slurm ...`.
 - **More than one SLURM account?** della then requires you to pick one:
-  `sbatch --account=<account> job.slurm ...`.
+  `sbatch --account=<account> slurm/della/job.slurm ...`.
 - **Email when the job starts or ends:** remove one `#` from the two `##SBATCH --mail-...`
   lines and fill in your NetID.
 - **Did it work?** Check the exit code (`sacct -j <jobid>`) or the script's last line,
   `run.py exited with N`. Don't search the log for "Error": the log holds the model's answers,
   and those can contain any word.
+
+**Another cluster?** Copy `slurm/della/` to `slurm/<cluster>/` and adjust what is della-specific:
+`--constraint=gpu80` (della's name for its 80 GB A100s) and the `anaconda3` module version.
 
 **Sizing a model to GPUs.** In bf16 every parameter takes 2 bytes, so a 27B model needs
 ~54 GB (fits on one 80 GB A100), and a 122B model needs ~233 GiB, which takes four (320 GiB
@@ -115,20 +118,24 @@ filled in next to an empty `human_verdict` column. Reviewing that column is part
 
 ```
 llm-tribunal/
+├── run.py               # load model, ask every question, write a results CSV
+├── download.py          # fetch a model's weights into ./models
+├── report.py            # judge a run's answers, print verdict tables
 ├── environment.yml      # conda: python, pytorch, transformers, accelerate
 ├── requirements-cuda.txt # optional: fast kernels, NVIDIA GPUs only
-├── questions.csv        # the question bank (id, category, question, expected_answer, kind, notes)
-├── download.py          # fetch a model's weights into ./models
-├── run.py               # load model, ask every question, write a results CSV
-├── report.py            # judge a run's answers, print verdict tables
 ├── tribunal/
 │   ├── backend.py       # pick a device, load the model, generate
 │   ├── judge.py         # the preliminary verdict heuristics
 │   └── hardware.py      # what machine am I on?
+├── data/
+│   └── questions.csv    # the question bank (id, category, question, expected_answer, kind, notes)
+├── slurm/
+│   └── della/           # example batch scripts for Princeton's della cluster
+│       ├── job.slurm           # one GPU
+│       └── job-multigpu.slurm  # a model split across four GPUs
 ├── models/              # downloaded weights (gitignored)
 ├── results/             # one CSV per run (machine, model, prompt, timestamp); stays local
-├── job.slurm            # example SLURM batch script, one GPU
-└── job-multigpu.slurm   # the same for a model split across four GPUs
+└── logs/                # SLURM job logs (gitignored)
 ```
 
 ## Hardware tested
