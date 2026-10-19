@@ -1,6 +1,6 @@
 """Ask a model every question in the bank and write one results CSV.
 
-Start here. Reads questions.csv, asks each question through tribunal/backend.py,
+Start here. Reads data/questions.csv, asks each question through tribunal/backend.py,
 and writes results/<machine>_<model>_<style>_<timestamp>.csv with the run's
 hardware and software details as leading '#' lines.
 
@@ -82,7 +82,7 @@ def positive_int(text):
 def parse_args():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--model", default=DEFAULT_MODEL, help="a Hugging Face repo id, or a folder of weights")
-    p.add_argument("--questions", type=Path, default=REPO / "questions.csv")
+    p.add_argument("--questions", type=Path, default=REPO / "data" / "questions.csv")
     p.add_argument("--limit", type=positive_int, help="only ask the first N questions")
     p.add_argument("--format", choices=FORMATS, default="brief", help="how long answers may be")
     p.add_argument("--prompt-style", choices=STYLES, default="neutral")
