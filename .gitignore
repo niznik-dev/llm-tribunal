@@ -5,9 +5,14 @@ __pycache__/
 .venv/
 .cache/
 
-# SLURM output
-slurm-*.out
+# SLURM job logs; logs/ itself stays in git because sbatch won't create it
+logs/*
+!logs/.gitkeep
 *.out
+
+# Local Claude Code state; only the shared instructions are committed
+.claude/*
+!.claude/CLAUDE.md
 
 # Model weights: run.py points HF_HUB_CACHE here unless HF_HOME/HF_HUB_CACHE is already set
 models/
