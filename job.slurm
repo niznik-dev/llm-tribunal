@@ -19,7 +19,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
-#SBATCH --mem=64G                 # host RAM: weights pass through it on their way to the GPU
+#SBATCH --mem=32G                 # host RAM: weights stream onto the GPU; 27B peaked under 2 GB
 #SBATCH --gres=gpu:1              # GPU count; della picks the partition from this
 #SBATCH --constraint=gpu80        # della: 80 GB A100s only (bf16 27B needs ~54 GB)
 #SBATCH --time=00:30:00

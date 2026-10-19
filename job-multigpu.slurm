@@ -20,7 +20,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
-#SBATCH --mem=256G                # host RAM: a quarter of a della 4-GPU node, per the usual fair share
+#SBATCH --mem=64G                 # host RAM: weights stream onto the GPUs; 122B peaked under 2 GB
 #SBATCH --gres=gpu:4              # GPU count; della picks the partition from this
 #SBATCH --constraint=gpu80        # della: 80 GB A100s only
 #SBATCH --time=01:00:00           # loading ~233 GiB from disk alone takes several minutes
