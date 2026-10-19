@@ -10,7 +10,7 @@ short enough to read in one sitting.
 
 > **Status: working demo.** Download a model, ask it the question bank, and get
 > preliminary verdicts per category. Example SLURM scripts run it on one GPU (`job.slurm`,
-> tested on della) or four (`job-multigpu.slurm`, not yet tested).
+> tested on della) or four (`job-multigpu.slurm`, smoke-tested on della).
 
 ## Quick start
 
@@ -37,6 +37,38 @@ Already have weights as a plain folder (say, a shared copy on a cluster)? Pass t
 and weight files; the Hugging Face cache is bookkeeping on top. Each results file records the
 model's repo id and revision, read from the cache or, for a folder, from an optional
 `REVISION.txt` beside the weights containing `repo: <id>` and `revision: <commit>` lines.
+
+## Running on a cluster
+
+Two example SLURM scripts, written for Princeton's della and easy to adapt to other clusters:
+`job.slurm` for one GPU, `job-multigpu.slurm` for four. Anything after the script name goes
+straight to `run.py`:
+
+```bash
+sbatch job.slurm --model /path/to/Qwen3.8-27B --limit 3
+sbatch job.slurm --model Qwen/Qwen3.5-9B --samples 5 --temperature 0.7
+```
+
+- **Download first, on a login node.** Compute nodes have no internet. Set `HF_HUB_CACHE`
+  to a scratch directory (home quotas are small) before `python download.py --model <id>`,
+  and keep the same setting in the job, either exported in your shell or uncommented in the script.
+- **`#SBATCH` lines are defaults.** Flags passed to `sbatch` override them:
+  `sbatch --time=2:00:00 job.slurm ...`.
+- **More than one SLURM account?** della then requires you to pick one:
+  `sbatch --account=<account> job.slurm ...`.
+- **Email when the job starts or ends:** remove one `#` from the two `##SBATCH --mail-...`
+  lines and fill in your NetID.
+- **Did it work?** Check the exit code (`sacct -j <jobid>`) or the script's last line,
+  `run.py exited with N`. Don't search the log for "Error": the log holds the model's answers,
+  and those can contain any word.
+
+**Sizing a model to GPUs.** In bf16 every parameter takes 2 bytes, so a 27B model needs
+~54 GB (fits on one 80 GB A100), and a 122B model needs ~233 GiB, which takes four (320 GiB
+total, leaving room for activations and the KV cache). `job-multigpu.slurm` passes
+`--device-map auto`, which puts consecutive layers on consecutive GPUs. The GPUs take
+turns rather than working in parallel, so extra GPUs buy room for the model, not speed.
+Multi-GPU jobs also tend to wait longer in the queue: the scheduler has to find a whole
+free node.
 
 ## Why "tribunal"?
 
