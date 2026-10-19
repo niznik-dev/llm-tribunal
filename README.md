@@ -104,6 +104,8 @@ llm-tribunal/
 | Machine | Chip / GPU | Memory | Device | Model | tok/s |
 |---|---|---|---|---|---|
 | MacBook Pro 16" (2023) | Apple M2 Pro | 32 GB | `mps` | Qwen3.5-2B | *pending* |
+| Princeton della | NVIDIA A100 80GB PCIe | 80 GB | `cuda` | Qwen3.8-27B | 14 |
+| Princeton della | 4× NVIDIA A100-SXM4-80GB | 4 × 80 GB | `cuda` | Qwen3.5-122B-A10B | 10 (3-question smoke test) |
 
 ## License
 
