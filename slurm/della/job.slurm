@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=llm-tribunal     # create a short name for your job
-#SBATCH --output=slurm-%x-%j.out    # stdout file (%x = job name, %j = job ID)
+#SBATCH --output=logs/%x-%j.out     # stdout file (logs/ must exist; %x = job name, %j = job ID)
 #SBATCH --nodes=1                   # node count
 #SBATCH --ntasks=1                  # total number of tasks across all nodes
 #SBATCH --cpus-per-task=4           # cpu-cores per task (>1 if multi-threaded tasks)
@@ -11,8 +11,8 @@
 ##SBATCH --mail-type=begin,end,fail # receive email notifications (remove one # to enable)
 ##SBATCH --mail-user=<YourNetID>@princeton.edu
 
-# Ask a model the question bank on one GPU. Arguments go straight to run.py:
-#     sbatch job.slurm --model /path/to/Qwen3.8-27B --limit 3
+# Ask a model the question bank on one GPU. From the repo root; arguments go to run.py:
+#     sbatch slurm/della/job.slurm --model /path/to/Qwen3.8-27B --limit 3
 # More options (accounts, bigger models, the weights cache): README, "Running on a cluster".
 
 module purge
