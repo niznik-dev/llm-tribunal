@@ -26,6 +26,12 @@ Downloaded a zip instead? Everything works; results just record the commit as `u
 Weights land in `./models/` unless `HF_HOME` or `HF_HUB_CACHE` is set. `run.py` never
 downloads; for another model, run `python download.py --model <id>` first.
 
+Already have weights as a plain folder (say, a shared copy on a cluster)? Pass the path:
+`python run.py --model /path/to/Qwen3.5-27B`. A model is just a folder of config, tokenizer,
+and weight files; the Hugging Face cache is bookkeeping on top. Each results file records the
+model's repo id and revision, read from the cache or, for a folder, from an optional
+`REVISION.txt` beside the weights containing `repo: <id>` and `revision: <commit>` lines.
+
 ## Why "tribunal"?
 
 In [Morrowind](https://en.uesp.net/wiki/Morrowind:Morrowind), the
